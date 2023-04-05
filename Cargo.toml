@@ -1,0 +1,77 @@
+[package]
+name = "actix-template"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+path = "src/lib.rs"
+
+[[bin]]
+name="actix-template"
+path="src/main.rs"
+
+[dependencies]
+actix-web = "4.3.1"
+serde_json = "1"
+config = "0.13.3"
+serde-aux = "4.1.2"
+tracing-actix-web = "0.7.3"
+tracing-bunyan-formatter = "0.3.7"
+tracing-log = "0.1.3"
+actix = "0.13.0"
+
+[dependencies.tracing]
+version = "0.1.37"
+features=["log"]
+
+[dependencies.tracing-subscriber]
+version = "0.3"
+features=[
+    "registry",
+    "env-filter"
+] 
+
+[dependencies.chrono]
+version = "0.4.23"
+default-features=false
+features =[
+    "clock"
+]
+
+[dependencies.uuid]
+version = "1.3.0"
+features = [
+    "v4",                # Lets you generate random UUIDs
+    "fast-rng",          # Use a faster (but still sufficiently random) RNG
+    "macro-diagnostics", # Enable better diagnostics for compile-time UUIDs
+]
+
+[dependencies.sqlx]
+version = "0.6.2"
+features = [
+    "runtime-actix-native-tls",
+    "macros",
+    "postgres",
+    "uuid",
+    "chrono",
+    "migrate",
+    "offline"
+]
+
+[dependencies.serde]
+version="1.0"
+features=["derive"]
+
+# For securing the sensitive info, using opt in than opt out
+[dependencies.secrecy]
+version="0.8.0"
+features=[
+    "serde"
+]
+
+# Dev dependencies are used exclusively when running tests or examples
+# They do not get included in the final application binary!
+[dev-dependencies]
+reqwest = "0.11.14"

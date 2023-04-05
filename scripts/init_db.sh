@@ -64,7 +64,7 @@ done
 
 # Export the database url for sqlx
 DATABASE_URL=postgres://$DB_USER:$DB_PASSWORD@$DB_HOST:$DB_PORT/$DB_NAME
-export DATABASE_URL
+export DATABASE_URL="${DATABASE_URL}"
 
 # Create the database 
 sqlx database create
