@@ -17,11 +17,11 @@ env:
   RUSTFLAGS: -Dwarnings
   DATABASE_URL: postgres://postgres:password@localhost:5433/actix-template
   SQLX_FEATURES: "rustls,postgres"
+  SQLX_VERSION: "0.6.3"
 
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
-  
     services:
       postgres:
         image: postgres:14
