@@ -35,7 +35,7 @@ pub async fn spawn_app() -> TestApp {
     configuration.database.database_name = Uuid::new_v4().to_string();
     let db_pool = configure_test_database(&configuration.database).await;
     let server = actix_template::run(listener, db_pool.clone()).expect("Failed to bind address");
-    let _ = actix::spawn(server);
+    actix::spawn(server);
     TestApp { address, db_pool }
 }
 
