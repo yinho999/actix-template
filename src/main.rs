@@ -6,7 +6,8 @@ use sqlx::postgres::PgPoolOptions;
 #[actix_web::main]
 async fn main() -> Result<(), Error> {
     // Setup logger
-    let subscriber = telemetry::get_subscriber("actix-template".into(), "debug".into(), std::io::stdout );
+    let subscriber =
+        telemetry::get_subscriber("actix-template".into(), "debug".into(), std::io::stdout);
     telemetry::init_subscriber(subscriber);
 
     let configuration = configuration::get_configuration().expect("Failed to read configuration.");

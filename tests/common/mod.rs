@@ -1,31 +1,29 @@
-
-use std::net::TcpListener;
+use actix_template::telemetry::init_subscriber;
+use actix_template::{get_configuration, telemetry, DatabaseSettings};
 use once_cell::sync::Lazy;
 use sqlx::{Executor, PgPool};
+use std::net::TcpListener;
 use uuid::Uuid;
-use actix_template::{DatabaseSettings, get_configuration, telemetry};
-use actix_template::telemetry::init_subscriber;
 pub struct TestApp {
     pub address: String,
     pub db_pool: PgPool,
 }
 // Ensure that the `tracing` stack is only initialised once using `once_cell`
-static TRACING:Lazy<()> = Lazy::new(|| {
+static TRACING: Lazy<()> = Lazy::new(|| {
     let subscriber_name = "actix-template-test".to_string();
     let subscriber_filter = "debug".to_string();
 
     // Do not show the `tracing` logs in the test output unless env var `TEST_LOG` is set
     if std::env::var("TEST_LOG").is_ok() {
-        let subscriber = telemetry::get_subscriber(subscriber_name, subscriber_filter, std::io::stdout);
+        let subscriber =
+            telemetry::get_subscriber(subscriber_name, subscriber_filter, std::io::stdout);
         init_subscriber(subscriber);
-    }
-    else {
-        let subscriber = telemetry::get_subscriber(subscriber_name, subscriber_filter, std::io::sink);
+    } else {
+        let subscriber =
+            telemetry::get_subscriber(subscriber_name, subscriber_filter, std::io::sink);
         init_subscriber(subscriber);
     }
 });
-
-
 
 pub async fn spawn_app() -> TestApp {
     // The first time `initialize` is invoked the code in `TRACING` is executed.
@@ -38,23 +36,24 @@ pub async fn spawn_app() -> TestApp {
     let db_pool = configure_test_database(&configuration.database).await;
     let server = actix_template::run(listener, db_pool.clone()).expect("Failed to bind address");
     let _ = actix::spawn(server);
-    TestApp {
-        address,
-        db_pool,
-    }
+    TestApp { address, db_pool }
 }
 
 async fn configure_test_database(configuration: &DatabaseSettings) -> PgPool {
     let pg_instance = PgPool::connect_with(configuration.without_database())
         .await
         .expect("Failed to connect to Postgres.");
-    pg_instance.execute(format!(r#"CREATE DATABASE "{}";"#, &configuration.database_name).as_str())
+    pg_instance
+        .execute(format!(r#"CREATE DATABASE "{}";"#, &configuration.database_name).as_str())
         .await
         .expect("Failed to create database.");
     let test_db_pool = PgPool::connect_with(configuration.with_database())
         .await
         .expect("Failed to connect to Postgres.");
 
-    sqlx::migrate!("./migrations").run(&test_db_pool).await.expect("Failed to migrate database.");
+    sqlx::migrate!("./migrations")
+        .run(&test_db_pool)
+        .await
+        .expect("Failed to migrate database.");
     test_db_pool
 }
