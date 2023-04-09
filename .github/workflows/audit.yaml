@@ -1,0 +1,22 @@
+name: Security audit
+on:
+  schedule:
+    - cron: "0 0 * * *"
+  push:
+    branches: [ "main" ]
+    paths:
+      - "**/Cargo.toml"
+      - "**/Cargo.lock"
+  pull_request:
+    branches: [ "main" ]
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: taiki-e/install-action@cargo-deny
+      - name: Scan for vulnerabilities
+        run: cargo deny check advisories
+      - uses: taiki-e/install-action@cargo-hack
+      - name: Check for vulnerable dependencies
+        run: cargo hack check --each-feature
