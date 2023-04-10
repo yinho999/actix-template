@@ -1,7 +1,6 @@
 name: Security audit
 
 on:
-  
   push:
     branches: [ "main" ]
     paths:
