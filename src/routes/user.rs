@@ -3,6 +3,7 @@ use chrono::Utc;
 use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
 use uuid::Uuid;
+use validator::Validate;
 
 // Get all users via GET
 #[get("/")]
@@ -86,11 +87,17 @@ async fn get_user_by_id_repository(id: Uuid, db_pool: &PgPool) -> Result<GetUser
 }
 
 // Create a new user via POST
-#[derive(serde::Deserialize, serde::Serialize, Debug)]
+#[derive(serde::Deserialize, serde::Serialize, Debug, Validate)]
 struct CreateUser {
+    #[validate(length(min = 1, max = 255))]
     name: String,
+    #[validate(email)]
     email: String,
+    #[validate(length(min = 8, max = 255))]
     password: String,
+    #[validate(length(min = 8, max = 255))]
+    #[validate(must_match = "password")]
+    password_confirmation: String,
 }
 #[tracing::instrument(name = "Create User", skip(json,db_pool),fields(name = %json.name, email = %json.email))]
 #[post("/")]
@@ -137,9 +144,11 @@ async fn create_user_repository(user: CreateUser, db_pool: &PgPool) -> Result<Uu
 }
 
 // Update a user via PUT
-#[derive(serde::Deserialize)]
+#[derive(serde::Deserialize, serde::Serialize, Debug, Validate)]
 pub struct UpdateUser {
+    #[validate(length(min = 1, max = 255))]
     name: Option<String>,
+    #[validate(length(min = 8, max = 255))]
     password: Option<String>,
 }
 #[tracing::instrument(name = "Update User", skip(json, db_pool) ,fields(id = %id))]

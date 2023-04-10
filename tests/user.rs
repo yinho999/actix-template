@@ -18,6 +18,7 @@ async fn user_crud() -> Result<(), Box<dyn std::error::Error>> {
     user_map.insert("name", "test");
     user_map.insert("email", "test@gmail.com");
     user_map.insert("password", "test");
+    user_map.insert("password_confirmation", "test");
 
     // Client Act on Server
     // the health check is exposed at /health_check;
