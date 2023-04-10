@@ -1,8 +1,7 @@
 name: Security audit
 
 on:
-  schedule:
-     - cron: "*/10 * * * *"
+  
   push:
     branches: [ "main" ]
     paths:
@@ -10,6 +9,8 @@ on:
       - "**/Cargo.lock"
   pull_request:
     branches: [ "main" ]
+#   schedule:
+#      - cron: "*/10 * * * *"
   
 jobs:
   audit:
