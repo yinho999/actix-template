@@ -133,7 +133,6 @@ async fn create_user_repository(user: CreateUser, db_pool: &PgPool) -> Result<Uu
     )
     .execute(db_pool)
     .await?;
-    tracing::error!("{}", &id.to_string());
     Ok(id)
 }
 
