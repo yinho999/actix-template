@@ -1,7 +1,7 @@
 name: Security audit
 on:
-  schedule:
-    - cron: "0 0 * * *"
+  # schedule:
+  #   - cron: "0 0 * * *"
   push:
     branches: [ "main" ]
     paths:
@@ -12,9 +12,33 @@ on:
 jobs:
   audit:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:14
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: actix-template
+        ports:
+          - 5433:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
     steps:
       - uses: actions/checkout@v3
       - uses: taiki-e/install-action@cargo-deny
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: sqlx-${{ env.SQLX_VERSION }}
+      - name: Install sqlx-cli
+        run:
+            cargo install sqlx-cli
+            --version=${{ env.SQLX_VERSION }}
+            --features ${{ env.SQLX_FEATURES }}
+            --no-default-features
+            --locked
+      - name: Migrate database
+        run: |
+          sudo apt-get install libpq-dev -y
+          SKIP_DOCKER=true ./scripts/init_db.sh
       - name: Scan for vulnerabilities
         run: cargo deny check advisories
       - uses: taiki-e/install-action@cargo-hack
