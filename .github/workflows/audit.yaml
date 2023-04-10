@@ -3,13 +3,13 @@ name: Security audit
 on:
   push:
     branches: [ "main" ]
-#     paths:
-#       - "**/Cargo.toml"
-#       - "**/Cargo.lock"
+    paths:
+      - "**/Cargo.toml"
+      - "**/Cargo.lock"
   pull_request:
     branches: [ "main" ]
-#   schedule:
-#      - cron: "*/10 * * * *"
+  schedule:
+     - cron: "0 0 * * *"
 env:
   CARGO_TERM_COLOR: always
   RUST_BACKTRACE: 1
