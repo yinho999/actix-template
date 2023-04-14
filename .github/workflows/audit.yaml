@@ -2,23 +2,22 @@ name: Security audit
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
     paths:
       - "**/Cargo.toml"
       - "**/Cargo.lock"
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
   schedule:
-     - cron: "0 0 * * *"
+    - cron: "0 0 * * *"
 env:
   CARGO_TERM_COLOR: always
   RUST_BACKTRACE: 1
   RUSTFLAGS: -Dwarnings
-  DATABASE_URL: postgres://postgres:password@localhost:5433/actix-template
+  DATABASE_URL: postgres://postgres:password@localhost:5433/{{project-name}}
   SQLX_FEATURES: "rustls,postgres"
   SQLX_VERSION: "0.6.3"
 
- 
 jobs:
   audit:
     runs-on: ubuntu-latest
@@ -28,7 +27,7 @@ jobs:
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: password
-          POSTGRES_DB: actix-template
+          POSTGRES_DB: { { project-name } }
         ports:
           - 5433:5432
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
@@ -39,12 +38,11 @@ jobs:
         with:
           key: sqlx-${{ env.SQLX_VERSION }}
       - name: Install sqlx-cli
-        run:
-            cargo install sqlx-cli
-            --version=${{ env.SQLX_VERSION }}
-            --features ${{ env.SQLX_FEATURES }}
-            --no-default-features
-            --locked
+        run: cargo install sqlx-cli
+          --version=${{ env.SQLX_VERSION }}
+          --features ${{ env.SQLX_FEATURES }}
+          --no-default-features
+          --locked
       - name: Migrate database
         run: |
           sudo apt-get install libpq-dev -y

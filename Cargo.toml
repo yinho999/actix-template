@@ -1,5 +1,5 @@
 [package]
-name = "actix-template"
+name = "{{project-name}}"
 version = "0.1.0"
 edition = "2021"
 
@@ -9,7 +9,7 @@ edition = "2021"
 path = "src/lib.rs"
 
 [[bin]]
-name="actix-template"
+name="{{project-name}}"
 path="src/main.rs"
 
 [dependencies]

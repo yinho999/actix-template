@@ -2,20 +2,20 @@ name: Rust
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
     types:
       - opened
       - synchronize
       - reopened
       - ready_for_review
-    branches: [ "main" ]
+    branches: ["main"]
 
 env:
   CARGO_TERM_COLOR: always
   RUST_BACKTRACE: 1
   RUSTFLAGS: -Dwarnings
-  DATABASE_URL: postgres://postgres:password@localhost:5433/actix-template
+  DATABASE_URL: postgres://postgres:password@localhost:5433/{{project-name}}
   SQLX_FEATURES: "rustls,postgres"
   SQLX_VERSION: "0.6.3"
 
@@ -28,45 +28,44 @@ jobs:
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: password
-          POSTGRES_DB: actix-template
+          POSTGRES_DB: { { project-name } }
         ports:
           - 5433:5432
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
 
     steps:
-    - uses: actions/checkout@v3
-    - uses: dtolnay/rust-toolchain@stable
-    - uses: Swatinem/rust-cache@v2
-      with:
-        key: sqlx-${{ env.SQLX_VERSION }}
-    - name: Install sqlx-cli
-      run:
-          cargo install sqlx-cli
+      - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: sqlx-${{ env.SQLX_VERSION }}
+      - name: Install sqlx-cli
+        run: cargo install sqlx-cli
           --version=${{ env.SQLX_VERSION }}
           --features ${{ env.SQLX_FEATURES }}
           --no-default-features
           --locked
-    - name: Migrate database
-      run: |
-        sudo apt-get install libpq-dev -y
-        SKIP_DOCKER=true ./scripts/init_db.sh
-    - name: Check sqlx-data.json is update to date
-      run: |
-        cargo sqlx prepare -- --bin actix-template
-    - name: Build
-      run: cargo build --verbose
-    - name: Run tests
-      run: cargo test --verbose
+      - name: Migrate database
+        run: |
+          sudo apt-get install libpq-dev -y
+          SKIP_DOCKER=true ./scripts/init_db.sh
+      - name: Check sqlx-data.json is update to date
+        run: |
+          cargo sqlx prepare -- --bin {{project-name}}
+      - name: Build
+        run: cargo build --verbose
+      - name: Run tests
+        run: cargo test --verbose
   fmt:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: dtolnay/rust-toolchain@stable
-      with:
-        components: rustfmt
-    - uses: Swatinem/rust-cache@v2
-    - name: Check formatting
-      run: cargo fmt --all -- --check
+      - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt
+      - uses: Swatinem/rust-cache@v2
+      - name: Check formatting
+        run: cargo fmt --all -- --check
 
   clippy:
     name: Clippy
@@ -77,31 +76,30 @@ jobs:
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: password
-          POSTGRES_DB: actix-template
+          POSTGRES_DB: { { project-name } }
         ports:
           - 5433:5432
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
     steps:
-    - uses: actions/checkout@v3
-    - uses: dtolnay/rust-toolchain@stable
-      with:
-        components: clippy
-    - uses: Swatinem/rust-cache@v2
-      with:
-        key: sqlx-${{ env.SQLX_VERSION }}
-    - name: Install sqlx-cli
-      run:
-          cargo install sqlx-cli
+      - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: sqlx-${{ env.SQLX_VERSION }}
+      - name: Install sqlx-cli
+        run: cargo install sqlx-cli
           --version=${{ env.SQLX_VERSION }}
           --features ${{ env.SQLX_FEATURES }}
           --no-default-features
           --locked
-    - name: Migrate database
-      run: |
-        sudo apt-get install libpq-dev -y
-        SKIP_DOCKER=true ./scripts/init_db.sh
-    - name: Linting
-      run: cargo clippy --all --all-targets --all-features -- -D warnings
+      - name: Migrate database
+        run: |
+          sudo apt-get install libpq-dev -y
+          SKIP_DOCKER=true ./scripts/init_db.sh
+      - name: Linting
+        run: cargo clippy --all --all-targets --all-features -- -D warnings
   coverage:
     name: Coverage
     runs-on: ubuntu-latest
@@ -111,28 +109,27 @@ jobs:
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: password
-          POSTGRES_DB: actix-template
+          POSTGRES_DB: { { project-name } }
         ports:
           - 5433:5432
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
     steps:
-    - uses: actions/checkout@v3
-    - uses: dtolnay/rust-toolchain@stable
-    - uses: Swatinem/rust-cache@v2
-      with:
-        key: sqlx-${{ env.SQLX_VERSION }}
-    - name: Install sqlx-cli
-      run:
-          cargo install sqlx-cli
+      - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: sqlx-${{ env.SQLX_VERSION }}
+      - name: Install sqlx-cli
+        run: cargo install sqlx-cli
           --version=${{ env.SQLX_VERSION }}
           --features ${{ env.SQLX_FEATURES }}
           --no-default-features
           --locked
-    - name: Migrate database
-      run: |
-        sudo apt-get install libpq-dev -y
-        SKIP_DOCKER=true ./scripts/init_db.sh
-    - name: Install cargo-tarpaulin
-      run: cargo install cargo-tarpaulin
-    - name: Generate code coverage
-      run: cargo tarpaulin --verbose --workspace
+      - name: Migrate database
+        run: |
+          sudo apt-get install libpq-dev -y
+          SKIP_DOCKER=true ./scripts/init_db.sh
+      - name: Install cargo-tarpaulin
+        run: cargo install cargo-tarpaulin
+      - name: Generate code coverage
+        run: cargo tarpaulin --verbose --workspace

@@ -1,4 +1,4 @@
-use actix_template::routes::GetUser;
+use {{project-name}}::routes::GetUser;
 use reqwest::{self, Client};
 use std::collections::HashMap;
 use uuid::Uuid;

@@ -34,8 +34,8 @@ DB_USER="${POSTGRES_USER:=postgres}"
 # Check if a custom password is provided or default to "password"
 DB_PASSWORD="${POSTGRES_PASSWORD:=password}"
 
-# Check if a custom database name is provided or default to "actix-template"
-DB_NAME="${POSTGRES_DB:=actix-template}"
+# Check if a custom database name is provided or default to "{{project-name}}"
+DB_NAME="${POSTGRES_DB:={{project-name}}}"
 
 # Check if a custom port is provided or default to "5433"
 DB_PORT="${POSTGRES_PORT:=5433}"

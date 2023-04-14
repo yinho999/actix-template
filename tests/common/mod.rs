@@ -1,5 +1,5 @@
-use actix_template::telemetry::init_subscriber;
-use actix_template::{get_configuration, telemetry, DatabaseSettings};
+use {{project-name}}::telemetry::init_subscriber;
+use {{project-name}}::{get_configuration, telemetry, DatabaseSettings};
 use once_cell::sync::Lazy;
 use sqlx::{Executor, PgPool};
 use std::net::TcpListener;
@@ -10,7 +10,7 @@ pub struct TestApp {
 }
 // Ensure that the `tracing` stack is only initialised once using `once_cell`
 static TRACING: Lazy<()> = Lazy::new(|| {
-    let subscriber_name = "actix-template-test".to_string();
+    let subscriber_name = "{{project-name}}-test".to_string();
     let subscriber_filter = "debug".to_string();
 
     // Do not show the `tracing` logs in the test output unless env var `TEST_LOG` is set
@@ -34,7 +34,7 @@ pub async fn spawn_app() -> TestApp {
     let mut configuration = get_configuration().expect("Failed to read configuration.");
     configuration.database.database_name = Uuid::new_v4().to_string();
     let db_pool = configure_test_database(&configuration.database).await;
-    let server = actix_template::run(listener, db_pool.clone()).expect("Failed to bind address");
+    let server = {{project-name}}::run(listener, db_pool.clone()).expect("Failed to bind address");
     actix::spawn(server);
     TestApp { address, db_pool }
 }

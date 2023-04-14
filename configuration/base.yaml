@@ -5,4 +5,4 @@ database:
   port: 5433
   username: "postgres"
   password: "password"
-  database_name: "actix-template"
+  database_name: "{{project-name}}"

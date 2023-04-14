@@ -16,7 +16,7 @@ COPY . .
 # Sqlx to offline mode 
 ENV SQLX_OFFLINE=true
 
-RUN cargo build --release --bin actix-template
+RUN cargo build --release --bin {{project-name}}
 
 # We do not need the Rust toolchain to run the binary!
 FROM debian:bullseye-slim AS runtime
@@ -29,10 +29,10 @@ RUN apt-get update -y \
     && apt-get autoremove -y \
     && apt-get clean -y \
     && rm -rf /var/lib/apt/lists/*
-COPY --from=builder /app/target/release/app actix-template
+COPY --from=builder /app/target/release/app {{project-name}}
 # Copy configration folder 
 COPY configuration configuration
 # Change environment variables here for configuration
 ENV APP_ENVIRONMENT=production
 
-ENTRYPOINT ["/actix-template"]
+ENTRYPOINT ["/{{project-name}}"]
