@@ -46,7 +46,7 @@ DB_HOST="${POSTGRES_HOST:=localhost}"
 # Skip if a docker postgres container is already running
 if ! docker ps | grep -q "postgres"; then
     # Start a postgres docker container
-    docker run --rm --name postgres -e POSTGRES_PASSWORD=$DB_PASSWORD -e POSTGRES_USER=$DB_USER -e POSTGRES_DB=$DB_NAME -p $DB_PORT:5432 -d postgres postgres -N 1000
+    docker run --rm --name actix-template -e POSTGRES_PASSWORD=$DB_PASSWORD -e POSTGRES_USER=$DB_USER -e POSTGRES_DB=$DB_NAME -p $DB_PORT:5432 -d postgres postgres -N 1000
 fi
 
 # Export the password for psql
